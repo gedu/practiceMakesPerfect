@@ -21,7 +21,7 @@ public class ListArray<E> implements IList<E> {
     @Override
     public E getFrom(int position) {
         validate(position);
-        return (E) content[position];
+        return get(position);
     }
 
     @Override
@@ -46,18 +46,34 @@ public class ListArray<E> implements IList<E> {
     }
 
     @SuppressWarnings("unchecked")
+    private E get(int pos) {
+        return (E) content[pos];
+    }
+
+    //Remove and item using the position/index, it is slower than
+    //the one java propose, why because of the copy. Java copy
+    //the array using c/c++ code which make the coping ~x10 faster
+    @SuppressWarnings({"unchecked", "ManualArrayCopy"})
     @Override
     public void removeFrom(int position) {
         validate(position);
 
         if (position == size - 1) {
-            content[size - 1] = null;
-            --size;
+            content[--size] = null;
         } else {
-            E lastItem = (E) content[size - 1];
-            content[position] = lastItem;
-            removeFrom(size - 1);
+            content[position] = null;
+
+            for (int i = position; i < size; i++) {
+                content[i] = content[i + 1];
+            }
+
+            content[--size] = null;
         }
+    }
+
+    private void fastRemove(int position) {
+        System.arraycopy(content, position+1, content, position, size - position - 1);
+        content[--size] = null;
     }
 
     @Override

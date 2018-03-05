@@ -7,5 +7,7 @@ public class MainActivity {
 
     public static void main(String[] args) {
         System.out.println("Hello world");
+        ArrayList<String> content = new ArrayList<>();
+        content.add("");
     }
 }
