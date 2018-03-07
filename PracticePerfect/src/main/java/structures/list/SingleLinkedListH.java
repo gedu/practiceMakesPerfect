@@ -12,9 +12,19 @@ public class SingleLinkedListH<E> implements IList<E> {
 
     public SingleLinkedListH() {}
 
-
     @Override
     public E getFrom(int position) {
+        checkPositionRange(position);
+        if (isEmptyHeader()) return null;
+
+        Node<E> currentNode = head;
+
+        for (int i = 0; currentNode != null; i++) {
+
+            if (i == position) return currentNode.content;
+            currentNode = currentNode.next;
+        }
+
         return null;
     }
 
@@ -38,16 +48,63 @@ public class SingleLinkedListH<E> implements IList<E> {
 
     @Override
     public void removeFrom(int position) {
+        checkPositionRange(position);
+        if (isEmptyHeader()) throw new IllegalStateException("List is empty");
 
+        if (position == 0) {
+            Node<E> nextNode = head.next;
+            head.content = null;
+            head.next = null;
+            head = nextNode;
+            --size;
+            return;
+        }
+
+        Node<E> currentNode = head.next;
+        Node<E> prevNode = head;
+
+        for (int i = 1; currentNode != null; i++) {
+
+            if (i == position) {
+                Node<E> tempNode = currentNode.next;
+                currentNode.content = null;
+                currentNode.next = null;
+                prevNode.next = tempNode;
+                --size;
+                break;
+            }
+            prevNode = currentNode;
+            currentNode = currentNode.next;
+        }
     }
 
     @Override
     public void clear() {
+        if (isEmptyHeader()) return;
 
+        Node<E> currentNode = head;
+
+        while (currentNode != null) {
+            Node<E> nextNode = currentNode.next;
+            currentNode.content = null;
+            currentNode.next = null;
+            currentNode = nextNode;
+        }
+        size = 0;
     }
 
     @Override
     public int size() {
         return size;
+    }
+
+    private void checkPositionRange(int position) {
+        if (position > size || position < 0)
+            throw new IndexOutOfBoundsException("position: "+position+" size: "+size);
+    }
+
+
+    private boolean isEmptyHeader() {
+        return (head == null);
     }
 }
